@@ -62,8 +62,8 @@ from art import logo
 from replit import clear
 import random
 
-cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
-game_on = True
+deck = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+
 
 def game_start():
   start = input("Would you like to play a game of blackjack? y/n: ")
@@ -79,15 +79,15 @@ def game_start():
 
 """This function returns two random elements from a 
 deck of cards"""
-def two_cards(cards):
+def two_cards(deck):
   two = []
   for i in range(2):
-     selection = cards[random.randint(0,len(cards) - 1)]
+     selection = deck[random.randint(0,len(deck) - 1)]
      two.append(selection)
   return two
 
-def draw_one(cards):
-    selection = cards[random.randint(0,len(cards) - 1)]
+def draw_one(deck):
+    selection = deck[random.randint(0,len(deck) - 1)]
     return selection
 
 def calc_score(your_cards):
@@ -97,22 +97,47 @@ def calc_score(your_cards):
 def hit(deck, cards):
   go_on = input("Type \"y\" to continue or \"n\" to pass: " )
   if go_on == "y":
-     selection = deck[random.randint(0,len(deck) - 1)]
-     cards.append(selection)
+     cards.append(draw_one(deck))
      calc_score(cards) 
      hit(deck,cards)
   else:
     print(f"Final score = {sum(cards)}")
-  
+
+def check(your_cards,computer_cards):
+  player_score = sum(your_cards)
+  computer_score = sum(computer_cards)
+  if player_score > computer_score & computer_score < 21:
+    computer_cards.append(draw_one(deck))
+    return False
+  else:
+    final(your_cards, computer_cards)
+    return True
+      
+def final(your_cards, computer_cards):
+  player_score = sum(your_cards)
+  computer_score = sum(computer_cards)
+  print(f"Your final hand: {your_cards}, your final score = {player_score}")
+  print(f"Opponent's final hand: {computer_cards}, final score = {computer_score}")
+  if player_score > 21:
+    print("You went over, you lose")
+  elif player_score == computer_score == 21:
+    print("It was a draw!")
+  elif computer_score > 21 & player_score < 21:
+    print("Opponent went Over, you win!")
+  elif 21 >= computer_score > player_score:
+    print("You lose!")
+
 game_on = game_start()  
 
 while game_on:
   print(logo)
-  your_cards = two_cards(cards)
-  computer_cards = two_cards(cards)
+  your_cards = two_cards(deck)
+  computer_cards = two_cards(deck)
   calc_score(your_cards)
-  computer_cards.append(draw_one(cards))
   print(f"Computer's first card is: {computer_cards[1]}")
-  hit(cards,your_cards)
+  hit(deck,your_cards)
+  done = check(your_cards,computer_cards)
+  while not done:
+    done = check(your_cards,computer_cards)
   game_on = game_start()
   
